@@ -1,410 +1,432 @@
 """
 GAT-XIDS: Explainable Graph Attention Network for Medical IoT Intrusion Detection
-==================================================================================
-Interactive Streamlit Application for Graph Exploration, GAT Classification,
-and Attention-Based Explainability.
+Streamlit viewer: a simple, guided tour of how the detector works.
+
+Pages
+  Home            - what the project does, in plain words
+  See the graph   - how similar network flows are linked together
+  Check a flow    - the model's verdict on one flow and WHY it decided that
+  Compare flows   - which traffic numbers differ between two flows
+  Model report    - how accurate the model is
 """
 
 import os
-import json
+
 import numpy as np
 import pandas as pd
-import torch
-import streamlit as st
-import plotly.graph_objects as go
 import plotly.express as px
+import streamlit as st
 
-from src.data.preprocess import (
-    EXPECTED_FEATURES,
-    CATEGORY_TO_ID,
-    ID_TO_CATEGORY,
-    SUBTYPE_TO_ID,
-    ID_TO_SUBTYPE
-)
+from src.data.preprocess import EXPECTED_FEATURES
 from src.dashboard.dashboard_utils import (
-    load_preprocessing_metadata,
     load_graph_split,
     load_training_history,
     build_interactive_graph_figure,
     plot_training_history_curves,
     create_attention_radar_figure,
-    CATEGORY_COLORS
+    CATEGORY_COLORS,
 )
 from src.explain.attention_explainer import AttentionExplainer
-from src.explain.explanation_report import format_explanation_report, DISCLAIMER_TEXT
+from src.explain.explanation_report import format_explanation_report
 
-# Page configuration
 st.set_page_config(
     page_title="GAT-XIDS | Medical IoT Intrusion Detection",
     page_icon="🛡️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
-# Custom High-End Styling
-st.markdown("""
+# --------------------------------------------------------------------------
+# Plain-language text
+# --------------------------------------------------------------------------
+PAGES = ["Home", "See the graph", "Check a flow", "Compare flows", "Model report"]
+
+PAGE_HELP = {
+    "Home": "Start here.",
+    "See the graph": "How similar flows are connected.",
+    "Check a flow": "Verdict and the reason for it.",
+    "Compare flows": "What differs between two flows.",
+    "Model report": "How accurate the model is.",
+}
+
+CATEGORY_INFO = {
+    "Benign": ("Normal traffic", "Nothing suspicious. This looks like regular device traffic."),
+    "ARP Spoofing": ("Fake identity attack", "A device pretends to be another one on the local network."),
+    "MQTT attacks": ("Attack on medical messaging", "Floods or malformed messages sent to the MQTT service that devices use to talk."),
+    "Reconnaissance": ("Scouting", "Someone is scanning the network to find devices and weak points."),
+    "TCP/IP DoS/DDoS": ("Overload attack", "Traffic floods that try to knock a device or service offline."),
+}
+
+THEME_BLUE = "#38bdf8"
+
+st.markdown(
+    """
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
-    html, body, [class*="css"] {
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    .block-container { padding-top: 2rem; max-width: 1150px; }
+    .hero h1 { font-size: 2.4rem; margin-bottom: 0.2rem; }
+    .hero p  { font-size: 1.1rem; color: #94a3b8; margin-top: 0; }
+    .card {
+        background: rgba(30, 41, 59, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 14px; padding: 18px 20px; height: 100%;
     }
-    
-    .stApp {
-        background: radial-gradient(circle at top left, #0f172a 0%, #020617 100%);
-        color: #f8fafc;
+    .card h4 { margin: 0 0 6px 0; font-size: 1.05rem; }
+    .card p  { margin: 0; color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; }
+    .step-num {
+        display: inline-block; width: 28px; height: 28px; line-height: 28px;
+        text-align: center; border-radius: 50%; background: #38bdf8; color: #0f172a;
+        font-weight: 700; margin-bottom: 8px;
     }
-    
-    .metric-card {
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid rgba(148, 163, 184, 0.15);
-        border-radius: 12px;
-        padding: 18px;
-        backdrop-filter: blur(8px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-        transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-    
-    .metric-card:hover {
-        border-color: rgba(56, 189, 248, 0.4);
-        transform: translateY(-2px);
-    }
-    
-    .disclaimer-banner {
-        background: rgba(245, 158, 11, 0.1);
-        border-left: 4px solid #f59e0b;
-        border-radius: 6px;
-        padding: 12px 16px;
-        margin-bottom: 20px;
-        font-size: 0.88rem;
-        color: #fde68a;
-    }
-    
-    .badge {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
+    .verdict { border-radius: 14px; padding: 20px 24px; margin: 8px 0 16px 0; }
+    .verdict .label { font-size: 0.85rem; opacity: 0.85; }
+    .verdict .big   { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+    .verdict .sub   { font-size: 1rem; opacity: 0.9; margin-top: 4px; }
+    .note { font-size: 0.85rem; color: #94a3b8; }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
+# --------------------------------------------------------------------------
+# Cached loaders
+# --------------------------------------------------------------------------
 @st.cache_resource
 def get_explainer():
-    """Initializes and caches AttentionExplainer."""
-    checkpoint_path = "models/gat_best_checkpoint.pt"
-    if os.path.exists(checkpoint_path):
-        return AttentionExplainer(checkpoint_path=checkpoint_path)
-    return None
+    path = "models/gat_best_checkpoint.pt"
+    return AttentionExplainer(checkpoint_path=path) if os.path.exists(path) else None
 
 
 @st.cache_data
 def get_graph_data(split_name: str):
-    """Loads and caches graph artifacts."""
     return load_graph_split(split=split_name)
 
 
-def main():
-    # Header
-    st.markdown("""
-    <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid rgba(148,163,184,0.15); margin-bottom: 18px;">
-        <div>
-            <h1 style="margin: 0; font-size: 2.1rem; font-weight: 700; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                GAT-XIDS
-            </h1>
-            <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.95rem;">
-                Explainable Graph Attention Network for Medical IoT Intrusion Detection
-            </p>
-        </div>
-        <div style="text-align: right;">
-            <span class="badge" style="background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3);">Pipeline Active</span>
-            <div style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">CICIoMT2024 Benchmark</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+@st.cache_data
+def get_history():
+    return load_training_history()
 
-    # Scientific Disclaimer Notice
-    st.markdown(f"""
-    <div class="disclaimer-banner">
-        <strong>METHODOLOGICAL NOTICE:</strong> Graph edges represent <em>statistical behavioral similarity</em> between network flows computed over 45 preprocessed features via unsupervised $k$-NN. They do not represent verified physical device-to-device wiring. Graph attention weights reflect model aggregation reliance and do not constitute physical causal proof.
-    </div>
-    """, unsafe_allow_html=True)
 
-    # Sidebar Navigation
-    st.sidebar.image("https://img.icons8.com/isometric/100/graph.png", width=64)
-    st.sidebar.title("Navigation")
-    view = st.sidebar.radio(
-        "Select Module:",
-        [
-            "🌐 Overview & Schema",
-            "🕸️ Flow-Similarity Graph Explorer",
-            "📊 GAT Model Performance",
-            "🔍 Attention-Based Explainer (XAI)",
-            "⚡ Flow Feature Inspector"
-        ]
+# --------------------------------------------------------------------------
+# Small helpers
+# --------------------------------------------------------------------------
+def go_to(page: str):
+    st.session_state["page"] = page
+
+
+def card(title: str, body: str):
+    st.markdown(f'<div class="card"><h4>{title}</h4><p>{body}</p></div>', unsafe_allow_html=True)
+
+
+def verdict_banner(category: str, confidence: float):
+    """Big colour-coded result box: green = normal, red = attack."""
+    is_ok = category == "Benign"
+    color = "16, 185, 129" if is_ok else "239, 68, 68"
+    title, desc = CATEGORY_INFO.get(category, (category, ""))
+    icon = "✅" if is_ok else "🚨"
+    st.markdown(
+        f"""
+<div class="verdict" style="background: rgba({color}, 0.14); border: 1px solid rgba({color}, 0.5);">
+  <div class="label">{icon} Model verdict</div>
+  <div class="big">{category} <span style="font-size:1.1rem;font-weight:500;">&nbsp;{confidence * 100:.0f}% sure</span></div>
+  <div class="sub"><b>{title}.</b> {desc}</div>
+</div>
+""",
+        unsafe_allow_html=True,
     )
 
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("System Info")
-    st.sidebar.markdown("""
-    - **Dataset**: CICIoMT2024
-    - **Features**: 45 Numerical Statistics
-    - **Classes**: 5 Broad Categories
-    - **Architecture**: 2-Layer GAT (4 Heads)
-    - **Evaluation**: Inductive Isolated Split
-    """)
 
-    meta = load_preprocessing_metadata()
-    history = load_training_history()
-    explainer = get_explainer()
+def style_fig(fig, height=380):
+    fig.update_layout(
+        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#e2e8f0"),
+        height=height,
+        margin=dict(t=50, b=20, l=30, r=30),
+    )
+    return fig
 
-    # VIEW 1: Overview & Schema
-    if view == "🌐 Overview & Schema":
-        st.subheader("System Overview & Preprocessing Architecture")
 
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.markdown("""
-            <div class="metric-card">
-                <div style="color: #94a3b8; font-size: 0.85rem;">Input Features</div>
-                <div style="font-size: 1.8rem; font-weight: 700; color: #38bdf8;">45</div>
-                <div style="font-size: 0.78rem; color: #10b981;">Standardized float32</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with col2:
-            st.markdown("""
-            <div class="metric-card">
-                <div style="color: #94a3b8; font-size: 0.85rem;">Broad Attack Classes</div>
-                <div style="font-size: 1.8rem; font-weight: 700; color: #818cf8;">5</div>
-                <div style="font-size: 0.78rem; color: #94a3b8;">19 Specific Subtypes</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with col3:
-            st.markdown("""
-            <div class="metric-card">
-                <div style="color: #94a3b8; font-size: 0.85rem;">Graph Metric</div>
-                <div style="font-size: 1.8rem; font-weight: 700; color: #f43f5e;">k-NN</div>
-                <div style="font-size: 0.78rem; color: #94a3b8;">k=5 (Euclidean distance)</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with col4:
-            st.markdown("""
-            <div class="metric-card">
-                <div style="color: #94a3b8; font-size: 0.85rem;">GAT Checkpoint</div>
-                <div style="font-size: 1.8rem; font-weight: 700; color: #34d399;">F1: 85.4%</div>
-                <div style="font-size: 0.78rem; color: #10b981;">Epoch 38 (Early Stop)</div>
-            </div>
-            """, unsafe_allow_html=True)
+def get_labels(data):
+    return list(getattr(data, "label_category", []) or [])
 
-        st.markdown("### Preprocessed Feature Schema (45 Numerical Attributes)")
-        feat_df = pd.DataFrame({
-            "Feature Index": range(len(EXPECTED_FEATURES)),
-            "Feature Name": EXPECTED_FEATURES,
-            "Type": ["float32"] * len(EXPECTED_FEATURES),
-            "Description": [
-                "Protocol duration, packet sizes, rates, flag numbers, or protocol indicators"
-            ] * len(EXPECTED_FEATURES)
-        })
-        st.dataframe(feat_df, use_container_width=True, height=280)
 
-        st.markdown("### Attack Taxonomy Mapping (19 Granular Subtypes -> 5 Broad Categories)")
-        cat_data = []
-        for cat, cid in CATEGORY_TO_ID.items():
-            subtypes = [s for s, c in meta.get("labels", {}).get("category_mapping", {}).items() if c == cat]
-            cat_data.append({
-                "Category ID": cid,
-                "Broad Category": cat,
-                "Mapped Subtypes Count": len(subtypes),
-                "Subtype Examples": ", ".join(subtypes[:3]) + ("..." if len(subtypes) > 3 else "")
-            })
-        st.dataframe(pd.DataFrame(cat_data), use_container_width=True)
+# --------------------------------------------------------------------------
+# Pages
+# --------------------------------------------------------------------------
+def page_home():
+    history = get_history()
+    f1 = history.get("best_val_macro_f1") if history else None
 
-    # VIEW 2: Flow-Similarity Graph Explorer
-    elif view == "🕸️ Flow-Similarity Graph Explorer":
-        st.subheader("Flow-Similarity Graph Topology Explorer")
+    st.markdown(
+        """
+<div class="hero">
+  <h1>🛡️ GAT-XIDS</h1>
+  <p>Spots cyber-attacks on hospital and medical-device networks, and explains why it flagged them.</p>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
 
-        col_opt1, col_opt2, col_opt3 = st.columns([2, 2, 2])
-        with col_opt1:
-            split_choice = st.selectbox("Select Graph Split:", ["train", "test"])
-        with col_opt2:
-            max_nodes_disp = st.slider("Display Node Limit (for smooth rendering):", 20, 150, 75, 5)
-        with col_opt3:
-            highlight_target = st.number_input("Target Node to Inspect:", min_value=0, max_value=499, value=0)
+    st.markdown("### How it works")
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown('<span class="step-num">1</span>', unsafe_allow_html=True)
+        card("Take network traffic", "Each row is one <b>flow</b>: a summary of a conversation between devices, described by 45 numbers (rate, size, flags...).")
+    with c2:
+        st.markdown('<span class="step-num">2</span>', unsafe_allow_html=True)
+        card("Link similar flows", "Every flow is connected to its <b>5 most similar flows</b>, forming a graph. Similar behaviour sits close together.")
+    with c3:
+        st.markdown('<span class="step-num">3</span>', unsafe_allow_html=True)
+        card("Decide and explain", "The model labels each flow and shows <b>which neighbouring flows</b> influenced the decision most.")
 
-        graph_data, graph_meta = get_graph_data(split_choice)
-
-        if graph_data is None:
-            st.warning(f"Graph artifact for split '{split_choice}' not found under results/graphs/.")
-        else:
-            # Summary Metrics Row
-            m1, m2, m3, m4 = st.columns(4)
-            m1.metric("Total Nodes", f"{graph_data.num_nodes:,}")
-            m2.metric("Total Edges", f"{graph_data.edge_index.shape[1]:,}")
-            m3.metric("Graph Density", f"{graph_meta.get('density', 0.0):.4f}")
-            m4.metric("k-Neighbors", f"k={graph_meta.get('k_neighbors', 5)}")
-
-            # Find target neighbors
-            target_neighbors = []
-            edge_idx = graph_data.edge_index.numpy()
-            for s, d in zip(edge_idx[0], edge_idx[1]):
-                if s == highlight_target:
-                    target_neighbors.append(int(d))
-
-            fig = build_interactive_graph_figure(
-                graph_data,
-                max_nodes=max_nodes_disp,
-                highlight_node=highlight_target,
-                neighbor_indices=target_neighbors
+    st.markdown("### What the answer can be")
+    cols = st.columns(5)
+    for col, (cat, (title, desc)) in zip(cols, CATEGORY_INFO.items()):
+        with col:
+            st.markdown(
+                f"""<div class="card" style="border-top: 4px solid {CATEGORY_COLORS.get(cat, '#64748b')};">
+                <h4>{cat}</h4><p>{title}</p></div>""",
+                unsafe_allow_html=True,
             )
-            st.plotly_chart(fig, use_container_width=True)
 
-            # Target Node Details
-            if highlight_target < graph_data.num_nodes:
-                st.markdown(f"### Node {highlight_target} Topology Details")
-                t_cat = graph_data.label_category[highlight_target] if hasattr(graph_data, "label_category") else "Unknown"
-                t_sub = graph_data.label_subtype[highlight_target] if hasattr(graph_data, "label_subtype") else "Unknown"
+    st.markdown("### At a glance")
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Traffic numbers per flow", "45")
+    m2.metric("Possible answers", "5")
+    m3.metric("Neighbours per flow", "5")
+    m4.metric("Model score (F1)", f"{f1 * 100:.1f}%" if f1 else "n/a",
+              help="F1 balances catching attacks with avoiding false alarms. 100% is perfect.")
 
-                st.markdown(f"""
-                - **Category**: `{t_cat}` | **Subtype**: `{t_sub}`
-                - **Degree (Connected Similar Flows)**: `{len(target_neighbors)}` neighbors
-                - **Neighbor Indices**: `{target_neighbors}`
-                """)
+    st.markdown("### Where to go next")
+    b1, b2, b3 = st.columns(3)
+    b1.button("See the graph  →", on_click=go_to, args=("See the graph",), use_container_width=True)
+    b2.button("Check a flow  →", on_click=go_to, args=("Check a flow",), type="primary", use_container_width=True)
+    b3.button("Model report  →", on_click=go_to, args=("Model report",), use_container_width=True)
 
-    # VIEW 3: GAT Model Performance
-    elif view == "📊 GAT Model Performance":
-        st.subheader("GAT Model Convergence & Training Metrics")
+    st.markdown(
+        '<p class="note">Lines in the graph mean <i>"behaves similarly"</i>, not "is physically cabled to". '
+        "Attention shows what the model relied on; it is not proof of cause.</p>",
+        unsafe_allow_html=True,
+    )
 
-        if history is None:
-            st.info("No training history JSON found at results/training_history.json.")
-        else:
-            c1, c2, c3, c4 = st.columns(4)
-            c1.metric("Best Epoch", history.get("best_epoch", 0))
-            c2.metric("Best Val Macro F1", f"{history.get('best_val_macro_f1', 0.0)*100:.2f}%")
-            c3.metric("Training Time", f"{history.get('training_time_seconds', 0.0):.2f}s")
-            c4.metric("Architecture", f"{history.get('config', {}).get('num_layers', 2)} Layers, {history.get('config', {}).get('heads', 4)} Heads")
 
-            fig = plot_training_history_curves(history)
-            st.plotly_chart(fig, use_container_width=True)
+def page_graph():
+    st.title("See the graph")
+    st.write("Each dot is one network flow, coloured by its true type. A line joins flows that behave alike.")
 
-            with st.expander("View Full Hyperparameter Configuration"):
-                st.json(history.get("config", {}))
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        split_label = st.radio("Data", ["Test flows", "Training flows"], horizontal=True,
+                               help="Test flows were never seen during training.")
+    split = "test" if split_label == "Test flows" else "train"
+    graph_data, graph_meta = get_graph_data(split)
 
-    # VIEW 4: Attention-Based Explainer (XAI)
-    elif view == "🔍 Attention-Based Explainer (XAI)":
-        st.subheader("Inherent Attention-Based Explanation (XAI)")
+    if graph_data is None:
+        st.warning(f"No saved graph found for '{split}' in results/graphs/.")
+        return
 
-        test_data, _ = get_graph_data("test")
-        if test_data is None or explainer is None:
-            st.error("Missing test graph artifact or GAT model checkpoint.")
-        else:
-            col_x1, col_x2 = st.columns([2, 1])
-            with col_x1:
-                node_to_explain = st.number_input(
-                    "Select Target Flow Node to Explain:",
-                    min_value=0,
-                    max_value=test_data.num_nodes - 1,
-                    value=0,
-                    step=1
-                )
-            with col_x2:
-                top_k = st.slider("Top Influential Neighbors (Top-K):", 1, 10, 5)
+    with c2:
+        max_nodes = st.slider("How many flows to draw", 20, 150, 75, 5,
+                              help="Fewer dots = a cleaner picture.")
+    with c3:
+        target = st.number_input("Highlight flow number", 0, int(graph_data.num_nodes) - 1, 0)
 
-            if st.button("Generate Explanation", type="primary"):
-                with st.spinner("Executing GAT forward pass and extracting attention weights..."):
-                    exp = explainer.explain_node(test_data, node_index=int(node_to_explain), top_k=int(top_k))
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Flows", f"{graph_data.num_nodes:,}")
+    m2.metric("Connections", f"{graph_data.edge_index.shape[1]:,}")
+    m3.metric("Links per flow (k)", f"{graph_meta.get('k_neighbors', 5)}")
 
-                # Display Results
-                pred = exp["prediction"]
-                target = exp["target_node"]
-                conf_pct = pred["confidence"] * 100
+    edge_idx = graph_data.edge_index.numpy()
+    neighbors = [int(d) for s, d in zip(edge_idx[0], edge_idx[1]) if s == target]
 
-                match_status = "✅ MATCH" if target["true_category"] == pred["predicted_category"] else "⚠️ MISMATCH"
+    fig = build_interactive_graph_figure(
+        graph_data, max_nodes=max_nodes, highlight_node=int(target), neighbor_indices=neighbors
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption("Tip: hover a dot to see details. Zoom with the scroll wheel.")
 
-                st.markdown(f"""
-                <div class="metric-card" style="margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-size: 0.85rem; color: #94a3b8;">Predicted Attack Category</div>
-                            <div style="font-size: 1.6rem; font-weight: 700; color: #38bdf8;">
-                                {pred['predicted_category']} <span style="font-size: 0.95rem; color: #94a3b8;">(Confidence: {conf_pct:.2f}%)</span>
-                            </div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 0.85rem; color: #94a3b8;">Ground Truth: {target['true_category']}</div>
-                            <div style="font-weight: 600; font-size: 0.95rem;">{match_status}</div>
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+    labels = get_labels(graph_data)
+    if labels:
+        cat = labels[int(target)]
+        title, _ = CATEGORY_INFO.get(cat, (cat, ""))
+        st.markdown(f"**Flow {int(target)}** is **{cat}** ({title}) and is linked to **{len(neighbors)}** similar flows: `{neighbors}`")
+        if neighbors:
+            same = sum(1 for n in neighbors if labels[n] == cat)
+            st.write(f"{same} of its {len(neighbors)} neighbours have the same type. "
+                     "This is why looking at neighbours helps the model decide.")
 
-                col_radar, col_probs = st.columns([1, 1])
-                with col_radar:
-                    radar_fig = create_attention_radar_figure(exp["top_contributing_neighbors"])
-                    st.plotly_chart(radar_fig, use_container_width=True)
+    with st.expander("What does this graph mean?"):
+        st.write(
+            "Flows are scaled, then each is linked to its 5 nearest flows (Euclidean distance over 45 features). "
+            "Lines show statistical similarity, not real device wiring."
+        )
 
-                with col_probs:
-                    prob_df = pd.DataFrame([
-                        {"Category": cat, "Probability": prob}
-                        for cat, prob in pred["class_probabilities"].items()
-                    ])
-                    prob_fig = px.bar(
-                        prob_df, x="Category", y="Probability",
-                        color="Category",
-                        color_discrete_map=CATEGORY_COLORS,
-                        title="Class Posterior Probabilities"
-                    )
-                    prob_fig.update_layout(
-                        plot_bgcolor="rgba(15, 23, 42, 0.95)",
-                        paper_bgcolor="rgba(15, 23, 42, 0.95)",
-                        font=dict(color="#e2e8f0"),
-                        showlegend=False,
-                        height=380,
-                        margin=dict(t=50, b=20, l=30, r=30)
-                    )
-                    st.plotly_chart(prob_fig, use_container_width=True)
 
-                st.markdown("### Top Contributing Neighbor Flows")
-                nb_rows = []
-                for nb in exp["top_contributing_neighbors"]:
-                    nb_rows.append({
-                        "Rank": nb["rank"],
-                        "Neighbor Node ID": nb["neighbor_index"],
-                        "Category": nb["neighbor_category"],
-                        "Subtype": nb["neighbor_subtype"],
-                        "Combined Attention": f"{nb['combined_attention']:.4f}",
-                        "Layer 2 Weight": f"{nb['layer_2_attention']:.4f}",
-                    })
-                st.dataframe(pd.DataFrame(nb_rows), use_container_width=True)
+def page_check():
+    st.title("Check a flow")
+    st.write("Pick a flow. The model gives its verdict and shows which neighbouring flows it relied on.")
 
-                with st.expander("View Full Text Forensic Explanation Report"):
-                    report_txt = format_explanation_report(exp)
-                    st.code(report_txt, language="text")
+    data, _ = get_graph_data("test")
+    explainer = get_explainer()
+    if data is None or explainer is None:
+        st.error("The test graph or the model file (models/gat_best_checkpoint.pt) is missing.")
+        return
 
-    # VIEW 5: Flow Feature Inspector
-    elif view == "⚡ Flow Feature Inspector":
-        st.subheader("Flow Feature Inspector & Statistical Comparison")
-        st.markdown("Compare feature distributions across preprocessed test instances.")
+    labels = get_labels(data)
+    c1, c2 = st.columns([1, 1])
+    with c1:
+        options = ["Any"] + list(CATEGORY_INFO.keys())
+        wanted = st.selectbox("1. Show me an example of", options,
+                              help="Filter by the flow's true type.")
+    pool = [i for i, l in enumerate(labels) if wanted == "Any" or l == wanted] or list(range(int(data.num_nodes)))
+    with c2:
+        pos = st.slider("2. Which example", 1, len(pool), 1, help=f"{len(pool)} flows match.")
+    node = pool[pos - 1]
 
-        test_data, _ = get_graph_data("test")
-        if test_data is not None:
-            n1 = st.selectbox("Select Flow Node A:", range(test_data.num_nodes), index=0)
-            n2 = st.selectbox("Select Flow Node B:", range(test_data.num_nodes), index=min(1, test_data.num_nodes - 1))
+    top_k = st.select_slider("3. How many influential neighbours to show", options=list(range(1, 11)), value=5)
 
-            feats_a = test_data.x[n1].numpy()
-            feats_b = test_data.x[n2].numpy()
+    with st.spinner("Asking the model..."):
+        exp = explainer.explain_node(data, node_index=int(node), top_k=int(top_k))
 
-            comp_df = pd.DataFrame({
-                "Feature": EXPECTED_FEATURES,
-                f"Node {n1} ({test_data.label_category[n1]})": feats_a,
-                f"Node {n2} ({test_data.label_category[n2]})": feats_b,
-                "Delta |A - B|": np.abs(feats_a - feats_b)
-            }).sort_values(by="Delta |A - B|", ascending=False)
+    pred, target = exp["prediction"], exp["target_node"]
+    verdict_banner(pred["predicted_category"], pred["confidence"])
 
-            st.dataframe(comp_df, use_container_width=True, height=450)
+    if target["true_category"] == pred["predicted_category"]:
+        st.success(f"Correct. The real label of flow {node} is {target['true_category']}.")
+    else:
+        st.warning(f"Mismatch. The real label of flow {node} is {target['true_category']}.")
+
+    nbrs = exp["top_contributing_neighbors"]
+    if nbrs:
+        best = nbrs[0]
+        st.info(
+            f"**Why?** The model looked at flows similar to flow {node}. "
+            f"The most influential was flow {best['neighbor_index']} ({best['neighbor_category']}), "
+            f"with {best['combined_attention'] * 100:.0f}% of the attention."
+        )
+
+    left, right = st.columns(2)
+    with left:
+        prob_df = pd.DataFrame(
+            [{"Category": k, "Probability": v} for k, v in pred["class_probabilities"].items()]
+        )
+        fig = px.bar(prob_df, x="Probability", y="Category", orientation="h", color="Category",
+                     color_discrete_map=CATEGORY_COLORS, title="How sure is the model about each type?")
+        fig.update_layout(showlegend=False, xaxis_tickformat=".0%")
+        st.plotly_chart(style_fig(fig), use_container_width=True)
+    with right:
+        nb_df = pd.DataFrame([{
+            "Rank": n["rank"],
+            "Flow": n["neighbor_index"],
+            "Type": n["neighbor_category"],
+            "Attention": n["combined_attention"],
+        } for n in nbrs])
+        fig2 = px.bar(nb_df, x="Attention", y=nb_df["Flow"].astype(str), orientation="h",
+                      color="Type", color_discrete_map=CATEGORY_COLORS,
+                      title="Which neighbours mattered most?")
+        fig2.update_layout(yaxis_title="Neighbour flow", yaxis=dict(autorange="reversed"),
+                           xaxis_tickformat=".0%")
+        st.plotly_chart(style_fig(fig2), use_container_width=True)
+
+    with st.expander("Advanced: per-head attention and full report"):
+        st.plotly_chart(create_attention_radar_figure(nbrs), use_container_width=True)
+        st.dataframe(pd.DataFrame([{
+            "Rank": n["rank"], "Flow": n["neighbor_index"], "Type": n["neighbor_category"],
+            "Subtype": n["neighbor_subtype"],
+            "Combined attention": round(n["combined_attention"], 4),
+            "Layer 2 attention": round(n["layer_2_attention"], 4),
+        } for n in nbrs]), use_container_width=True, hide_index=True)
+        st.code(format_explanation_report(exp), language="text")
+
+
+def page_compare():
+    st.title("Compare two flows")
+    st.write("See which traffic numbers differ most between two flows, for example a normal one and an attack.")
+
+    data, _ = get_graph_data("test")
+    if data is None:
+        st.warning("No test graph found.")
+        return
+
+    labels = get_labels(data)
+    n = int(data.num_nodes)
+
+    def fmt(i):
+        return f"Flow {i} ({labels[i]})" if labels else f"Flow {i}"
+
+    c1, c2 = st.columns(2)
+    a = c1.selectbox("Flow A", range(n), index=0, format_func=fmt)
+    b = c2.selectbox("Flow B", range(n), index=min(1, n - 1), format_func=fmt)
+
+    fa, fb = data.x[a].numpy(), data.x[b].numpy()
+    df = pd.DataFrame({"Feature": EXPECTED_FEATURES, "A": fa, "B": fb, "Difference": np.abs(fa - fb)})
+    df = df.sort_values("Difference", ascending=False)
+
+    top = df.head(10).iloc[::-1]
+    fig = px.bar(top, x="Difference", y="Feature", orientation="h",
+                 title="Top 10 features that differ most")
+    fig.update_traces(marker_color=THEME_BLUE)
+    st.plotly_chart(style_fig(fig, 420), use_container_width=True)
+    st.caption("Values are standardised, so differences are comparable across features.")
+
+    with st.expander("Show all 45 features"):
+        st.dataframe(df, use_container_width=True, height=420, hide_index=True)
+
+
+def page_report():
+    st.title("Model report")
+    history = get_history()
+    if history is None:
+        st.info("No training history found at results/training_history.json.")
+        return
+
+    cfg = history.get("config", {})
+    f1 = history.get("best_val_macro_f1", 0.0)
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Overall score (F1)", f"{f1 * 100:.1f}%",
+              help="Average F1 across the 5 classes on validation data. Higher is better.")
+    c2.metric("Best round", f"Epoch {history.get('best_epoch', 0)}",
+              help="Training stopped here because it stopped improving.")
+    c3.metric("Training time", f"{history.get('training_time_seconds', 0.0):.0f} s")
+
+    st.write("The curves below show the model getting better as it trained. "
+             "Loss should go down; accuracy and F1 should go up.")
+    st.plotly_chart(plot_training_history_curves(history), use_container_width=True)
+
+    st.markdown("#### Good to know")
+    st.markdown(
+        "- The training data had far more attack rows (mostly DoS/DDoS) than normal ones, "
+        "so the model can be less reliable on **Benign** and **ARP Spoofing** flows.\n"
+        "- The test flows form their own graph, so the model is checked on data it never saw."
+    )
+
+    with st.expander("Technical settings"):
+        st.json(cfg)
+
+
+# --------------------------------------------------------------------------
+# App shell
+# --------------------------------------------------------------------------
+def main():
+    st.session_state.setdefault("page", "Home")
+
+    with st.sidebar:
+        st.markdown("## 🛡️ GAT-XIDS")
+        st.caption("Medical IoT intrusion detection")
+        st.radio("Go to", PAGES, key="page",
+                 captions=[PAGE_HELP[p] for p in PAGES])
+        st.divider()
+        st.caption("Dataset: CICIoMT2024")
+
+    page = st.session_state["page"]
+    {
+        "Home": page_home,
+        "See the graph": page_graph,
+        "Check a flow": page_check,
+        "Compare flows": page_compare,
+        "Model report": page_report,
+    }[page]()
 
 
 if __name__ == "__main__":
