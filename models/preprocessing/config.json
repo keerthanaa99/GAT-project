@@ -1,0 +1,27 @@
+{
+  "config": {
+    "train_dir": "WIFI & MQTT/attacks/CSV/train",
+    "test_dir": "WIFI & MQTT/attacks/CSV/test",
+    "output_dir": "results/preprocessed",
+    "artifact_dir": "models/preprocessing",
+    "chunk_size": 10000,
+    "sample_rows_per_file": 500,
+    "drop_constant_features": false,
+    "variance_threshold": 1e-09
+  },
+  "fit_metrics": {
+    "total_rows_fitted": 25500,
+    "total_files_fitted": 51,
+    "total_infs_handled": 0,
+    "total_nans_handled": 0,
+    "class_distribution": {
+      "ARP Spoofing": 500,
+      "Benign": 500,
+      "MQTT attacks": 2500,
+      "Reconnaissance": 2000,
+      "TCP/IP DoS/DDoS": 20000
+    },
+    "is_sampled": true,
+    "sample_rows_per_file": 500
+  }
+}

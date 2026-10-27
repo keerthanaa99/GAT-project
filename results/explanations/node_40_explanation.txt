@@ -1,0 +1,54 @@
+==============================================================================
+           GAT-XIDS INHERENT ATTENTION EXPLANATION REPORT
+==============================================================================
+
+[1] TARGET FLOW NODE OVERVIEW
+------------------------------------------------------------------------------
+  Node Index in Graph : 40
+  Predicted Category  : Benign (ID: 0)
+  Prediction Confidence: 91.00%
+  Ground-Truth Label  : Benign [MATCH] (Evaluation Only)
+  Source Capture File : Benign
+  Traffic Subtype     : Benign
+
+[2] PREDICTED CLASS PROBABILITY DISTRIBUTION
+------------------------------------------------------------------------------
+  Benign               :  91.00% | ###############################
+  ARP Spoofing         :   2.61% | 
+  MQTT attacks         :   4.25% | #
+  Reconnaissance       :   2.12% | 
+  TCP/IP DoS/DDoS      :   0.02% | 
+
+[3] ATTENTION AGGREGATION PROFILE
+------------------------------------------------------------------------------
+  Layer 1 Self-Attention (Node's Own State) : 15.49%
+  Layer 1 External Neighbor Reliance        : 84.51%
+  Layer 2 Self-Attention (Decision Layer)   : 16.98%
+  Layer 2 External Neighbor Reliance        : 83.02%
+
+[4] TOP-5 CONTRIBUTING NEIGHBOR FLOWS (Ranked by Decision Layer Attention)
+------------------------------------------------------------------------------
+  Rank  Neighbor   Layer 2 Attn   Layer 1 Mean   Neighbor Category    Subtype
+  ---- -------- ------------ ------------ ------------------ ---------------
+  1     Node 76    17.19%         17.87%         Benign               Benign
+  2     Node 66    16.86%         17.34%         Benign               Benign
+  3     Node 70    16.79%         16.05%         Benign               Benign
+  4     Node 79    16.15%         16.31%         Benign               Benign
+  5     Node 43    16.04%         16.94%         Benign               Benign
+
+[5] NEIGHBORHOOD STATISTICAL FEATURE ALIGNMENT (Separate Feature-Level Contrast)
+------------------------------------------------------------------------------
+  Note: Shows numerical proximity between target node and top neighbor in feature space.
+  Closest Shared Features with Top Neighbor (Node 76):
+    - Protocol Type            : absolute distance = 0.0000
+    - Duration                 : absolute distance = 0.0000
+    - fin_flag_number          : absolute distance = 0.0000
+    - Drate                    : absolute distance = 0.0000
+
+==============================================================================
+SCIENTIFIC & FORENSIC DISCLAIMER:
+Graph attention coefficients quantify the structural aggregation weights assigned by GAT
+layers during neighborhood message passing. While high attention indicates strong statistical
+reliance on a neighbor's representation for classification, it reflects model aggregation
+behavior rather than empirical causal proof of attack transmission or physical device origin.
+==============================================================================

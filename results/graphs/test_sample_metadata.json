@@ -1,0 +1,20 @@
+{
+  "source_file": "results/preprocessed/test_sample.parquet",
+  "num_nodes": 200,
+  "num_edges": 1324,
+  "num_features": 45,
+  "k_neighbors": 5,
+  "metric": "euclidean",
+  "make_undirected": true,
+  "class_distribution": {
+    "Benign": 40,
+    "ARP Spoofing": 40,
+    "MQTT attacks": 40,
+    "Reconnaissance": 40,
+    "TCP/IP DoS/DDoS": 40
+  },
+  "density": 0.03326633165829146,
+  "build_time_seconds": 0.0189,
+  "load_time_seconds": 0.058,
+  "methodology": "k-Nearest-Neighbor Flow Statistical Similarity (Labels Excluded from Topology)"
+}

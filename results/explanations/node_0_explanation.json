@@ -1,0 +1,405 @@
+{
+  "target_node": {
+    "node_index": 0,
+    "true_class_id": 1,
+    "true_category": "ARP Spoofing",
+    "source_file": "ARP_Spoofing",
+    "subtype": "ARP_Spoofing"
+  },
+  "prediction": {
+    "predicted_class_id": 1,
+    "predicted_category": "ARP Spoofing",
+    "confidence": 0.63176,
+    "class_probabilities": {
+      "Benign": 0.032876159995794296,
+      "ARP Spoofing": 0.6317602396011353,
+      "MQTT attacks": 0.3248940110206604,
+      "Reconnaissance": 0.010469524189829826,
+      "TCP/IP DoS/DDoS": 2.521812314526528e-09
+    }
+  },
+  "self_attention": {
+    "layer_1_mean_self_attention": 0.177081,
+    "layer_2_self_attention": 0.097832,
+    "layer_1_head_attentions": [
+      0.00708,
+      0.141205,
+      0.480459,
+      0.079581
+    ]
+  },
+  "total_incoming_neighbors": 5,
+  "top_k_requested": 5,
+  "top_contributing_neighbors": [
+    {
+      "neighbor_index": 143,
+      "is_self": false,
+      "layer_1_mean_attention": 0.106988,
+      "layer_1_head_attentions": [
+        0.005244,
+        0.147594,
+        0.03004,
+        0.245073
+      ],
+      "layer_2_attention": 0.550431,
+      "metadata": {
+        "category": "Reconnaissance",
+        "subtype": "Recon-VulScan",
+        "source_file": "Recon-VulScan"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 116,
+      "is_self": false,
+      "layer_1_mean_attention": 0.139644,
+      "layer_1_head_attentions": [
+        0.067974,
+        0.172261,
+        0.050104,
+        0.268237
+      ],
+      "layer_2_attention": 0.112855,
+      "metadata": {
+        "category": "MQTT attacks",
+        "subtype": "MQTT-DoS-Publish_Flood",
+        "source_file": "MQTT-DoS-Publish_Flood"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 105,
+      "is_self": false,
+      "layer_1_mean_attention": 0.13272,
+      "layer_1_head_attentions": [
+        0.09802,
+        0.17933,
+        0.072407,
+        0.181124
+      ],
+      "layer_2_attention": 0.084423,
+      "metadata": {
+        "category": "MQTT attacks",
+        "subtype": "MQTT-DDoS-Publish_Flood",
+        "source_file": "MQTT-DDoS-Publish_Flood"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 114,
+      "is_self": false,
+      "layer_1_mean_attention": 0.206671,
+      "layer_1_head_attentions": [
+        0.398899,
+        0.187441,
+        0.116718,
+        0.123627
+      ],
+      "layer_2_attention": 0.079769,
+      "metadata": {
+        "category": "MQTT attacks",
+        "subtype": "MQTT-DDoS-Publish_Flood",
+        "source_file": "MQTT-DDoS-Publish_Flood"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "syn_flag_number",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 95,
+      "is_self": false,
+      "layer_1_mean_attention": 0.236896,
+      "layer_1_head_attentions": [
+        0.422784,
+        0.17217,
+        0.250273,
+        0.102358
+      ],
+      "layer_2_attention": 0.074691,
+      "metadata": {
+        "category": "MQTT attacks",
+        "subtype": "MQTT-DDoS-Publish_Flood",
+        "source_file": "MQTT-DDoS-Publish_Flood"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    }
+  ],
+  "all_neighbors_detail": [
+    {
+      "neighbor_index": 95,
+      "is_self": false,
+      "layer_1_mean_attention": 0.236896,
+      "layer_1_head_attentions": [
+        0.422784,
+        0.17217,
+        0.250273,
+        0.102358
+      ],
+      "layer_2_attention": 0.074691,
+      "metadata": {
+        "category": "MQTT attacks",
+        "subtype": "MQTT-DDoS-Publish_Flood",
+        "source_file": "MQTT-DDoS-Publish_Flood"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 105,
+      "is_self": false,
+      "layer_1_mean_attention": 0.13272,
+      "layer_1_head_attentions": [
+        0.09802,
+        0.17933,
+        0.072407,
+        0.181124
+      ],
+      "layer_2_attention": 0.084423,
+      "metadata": {
+        "category": "MQTT attacks",
+        "subtype": "MQTT-DDoS-Publish_Flood",
+        "source_file": "MQTT-DDoS-Publish_Flood"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 114,
+      "is_self": false,
+      "layer_1_mean_attention": 0.206671,
+      "layer_1_head_attentions": [
+        0.398899,
+        0.187441,
+        0.116718,
+        0.123627
+      ],
+      "layer_2_attention": 0.079769,
+      "metadata": {
+        "category": "MQTT attacks",
+        "subtype": "MQTT-DDoS-Publish_Flood",
+        "source_file": "MQTT-DDoS-Publish_Flood"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "syn_flag_number",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 116,
+      "is_self": false,
+      "layer_1_mean_attention": 0.139644,
+      "layer_1_head_attentions": [
+        0.067974,
+        0.172261,
+        0.050104,
+        0.268237
+      ],
+      "layer_2_attention": 0.112855,
+      "metadata": {
+        "category": "MQTT attacks",
+        "subtype": "MQTT-DoS-Publish_Flood",
+        "source_file": "MQTT-DoS-Publish_Flood"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 143,
+      "is_self": false,
+      "layer_1_mean_attention": 0.106988,
+      "layer_1_head_attentions": [
+        0.005244,
+        0.147594,
+        0.03004,
+        0.245073
+      ],
+      "layer_2_attention": 0.550431,
+      "metadata": {
+        "category": "Reconnaissance",
+        "subtype": "Recon-VulScan",
+        "source_file": "Recon-VulScan"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 0,
+      "is_self": true,
+      "layer_1_mean_attention": 0.177081,
+      "layer_1_head_attentions": [
+        0.00708,
+        0.141205,
+        0.480459,
+        0.079581
+      ],
+      "layer_2_attention": 0.097832,
+      "metadata": {
+        "category": "ARP Spoofing",
+        "subtype": "ARP_Spoofing",
+        "source_file": "ARP_Spoofing"
+      }
+    }
+  ],
+  "scientific_disclaimer": "SCIENTIFIC & FORENSIC DISCLAIMER:\nGraph attention coefficients quantify the structural aggregation weights assigned by GAT\nlayers during neighborhood message passing. While high attention indicates strong statistical\nreliance on a neighbor's representation for classification, it reflects model aggregation\nbehavior rather than empirical causal proof of attack transmission or physical device origin."
+}

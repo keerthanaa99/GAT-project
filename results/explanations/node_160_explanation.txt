@@ -1,0 +1,54 @@
+==============================================================================
+           GAT-XIDS INHERENT ATTENTION EXPLANATION REPORT
+==============================================================================
+
+[1] TARGET FLOW NODE OVERVIEW
+------------------------------------------------------------------------------
+  Node Index in Graph : 160
+  Predicted Category  : TCP/IP DoS/DDoS (ID: 4)
+  Prediction Confidence: 98.26%
+  Ground-Truth Label  : TCP/IP DoS/DDoS [MATCH] (Evaluation Only)
+  Source Capture File : TCP_IP-DDoS-TCP
+  Traffic Subtype     : TCP_IP-DDoS-TCP
+
+[2] PREDICTED CLASS PROBABILITY DISTRIBUTION
+------------------------------------------------------------------------------
+  Benign               :   0.36% | 
+  ARP Spoofing         :   0.18% | 
+  MQTT attacks         :   0.99% | 
+  Reconnaissance       :   0.21% | 
+  TCP/IP DoS/DDoS      :  98.26% | ##################################
+
+[3] ATTENTION AGGREGATION PROFILE
+------------------------------------------------------------------------------
+  Layer 1 Self-Attention (Node's Own State) : 13.60%
+  Layer 1 External Neighbor Reliance        : 86.40%
+  Layer 2 Self-Attention (Decision Layer)   : 14.92%
+  Layer 2 External Neighbor Reliance        : 85.08%
+
+[4] TOP-5 CONTRIBUTING NEIGHBOR FLOWS (Ranked by Decision Layer Attention)
+------------------------------------------------------------------------------
+  Rank  Neighbor   Layer 2 Attn   Layer 1 Mean   Neighbor Category    Subtype
+  ---- -------- ------------ ------------ ------------------ ---------------
+  1     Node 186   15.09%         13.60%         TCP/IP DoS/DDoS      TCP_IP-DoS-TCP
+  2     Node 178   14.92%         15.20%         TCP/IP DoS/DDoS      TCP_IP-DDoS-TCP
+  3     Node 197   14.92%         13.60%         TCP/IP DoS/DDoS      TCP_IP-DoS-TCP
+  4     Node 169   14.92%         13.60%         TCP/IP DoS/DDoS      TCP_IP-DDoS-TCP
+  5     Node 190   12.70%         15.20%         TCP/IP DoS/DDoS      TCP_IP-DDoS-TCP
+
+[5] NEIGHBORHOOD STATISTICAL FEATURE ALIGNMENT (Separate Feature-Level Contrast)
+------------------------------------------------------------------------------
+  Note: Shows numerical proximity between target node and top neighbor in feature space.
+  Closest Shared Features with Top Neighbor (Node 186):
+    - Header_Length            : absolute distance = 0.0000
+    - Protocol Type            : absolute distance = 0.0000
+    - Duration                 : absolute distance = 0.0000
+    - Rate                     : absolute distance = 0.0000
+
+==============================================================================
+SCIENTIFIC & FORENSIC DISCLAIMER:
+Graph attention coefficients quantify the structural aggregation weights assigned by GAT
+layers during neighborhood message passing. While high attention indicates strong statistical
+reliance on a neighbor's representation for classification, it reflects model aggregation
+behavior rather than empirical causal proof of attack transmission or physical device origin.
+==============================================================================

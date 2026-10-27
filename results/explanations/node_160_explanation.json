@@ -1,0 +1,440 @@
+{
+  "target_node": {
+    "node_index": 160,
+    "true_class_id": 4,
+    "true_category": "TCP/IP DoS/DDoS",
+    "source_file": "TCP_IP-DDoS-TCP",
+    "subtype": "TCP_IP-DDoS-TCP"
+  },
+  "prediction": {
+    "predicted_class_id": 4,
+    "predicted_category": "TCP/IP DoS/DDoS",
+    "confidence": 0.982611,
+    "class_probabilities": {
+      "Benign": 0.003553143935278058,
+      "ARP Spoofing": 0.0018366401782259345,
+      "MQTT attacks": 0.009929483756422997,
+      "Reconnaissance": 0.0020699407905340195,
+      "TCP/IP DoS/DDoS": 0.9826107621192932
+    }
+  },
+  "self_attention": {
+    "layer_1_mean_self_attention": 0.136022,
+    "layer_2_self_attention": 0.149163,
+    "layer_1_head_attentions": [
+      0.14653,
+      0.122324,
+      0.140599,
+      0.134637
+    ]
+  },
+  "total_incoming_neighbors": 6,
+  "top_k_requested": 5,
+  "top_contributing_neighbors": [
+    {
+      "neighbor_index": 186,
+      "is_self": false,
+      "layer_1_mean_attention": 0.136023,
+      "layer_1_head_attentions": [
+        0.146535,
+        0.122321,
+        0.140598,
+        0.134636
+      ],
+      "layer_2_attention": 0.150889,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DoS-TCP",
+        "source_file": "TCP_IP-DoS-TCP"
+      },
+      "aligned_features": [
+        [
+          "Header_Length",
+          0.0
+        ],
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "Rate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 178,
+      "is_self": false,
+      "layer_1_mean_attention": 0.15197,
+      "layer_1_head_attentions": [
+        0.137957,
+        0.170236,
+        0.145868,
+        0.153818
+      ],
+      "layer_2_attention": 0.149163,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DDoS-TCP",
+        "source_file": "TCP_IP-DDoS-TCP"
+      },
+      "aligned_features": [
+        [
+          "Header_Length",
+          0.0
+        ],
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 197,
+      "is_self": false,
+      "layer_1_mean_attention": 0.136023,
+      "layer_1_head_attentions": [
+        0.146534,
+        0.122324,
+        0.140599,
+        0.134637
+      ],
+      "layer_2_attention": 0.149163,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DoS-TCP",
+        "source_file": "TCP_IP-DoS-TCP"
+      },
+      "aligned_features": [
+        [
+          "Header_Length",
+          0.0
+        ],
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 169,
+      "is_self": false,
+      "layer_1_mean_attention": 0.136022,
+      "layer_1_head_attentions": [
+        0.14653,
+        0.122324,
+        0.140599,
+        0.134637
+      ],
+      "layer_2_attention": 0.149163,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DDoS-TCP",
+        "source_file": "TCP_IP-DDoS-TCP"
+      },
+      "aligned_features": [
+        [
+          "Header_Length",
+          0.0
+        ],
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "Rate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 190,
+      "is_self": false,
+      "layer_1_mean_attention": 0.15197,
+      "layer_1_head_attentions": [
+        0.137957,
+        0.170236,
+        0.145868,
+        0.153818
+      ],
+      "layer_2_attention": 0.126996,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DDoS-TCP",
+        "source_file": "TCP_IP-DDoS-TCP"
+      },
+      "aligned_features": [
+        [
+          "Header_Length",
+          0.0
+        ],
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    }
+  ],
+  "all_neighbors_detail": [
+    {
+      "neighbor_index": 169,
+      "is_self": false,
+      "layer_1_mean_attention": 0.136022,
+      "layer_1_head_attentions": [
+        0.14653,
+        0.122324,
+        0.140599,
+        0.134637
+      ],
+      "layer_2_attention": 0.149163,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DDoS-TCP",
+        "source_file": "TCP_IP-DDoS-TCP"
+      },
+      "aligned_features": [
+        [
+          "Header_Length",
+          0.0
+        ],
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "Rate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 178,
+      "is_self": false,
+      "layer_1_mean_attention": 0.15197,
+      "layer_1_head_attentions": [
+        0.137957,
+        0.170236,
+        0.145868,
+        0.153818
+      ],
+      "layer_2_attention": 0.149163,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DDoS-TCP",
+        "source_file": "TCP_IP-DDoS-TCP"
+      },
+      "aligned_features": [
+        [
+          "Header_Length",
+          0.0
+        ],
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 186,
+      "is_self": false,
+      "layer_1_mean_attention": 0.136023,
+      "layer_1_head_attentions": [
+        0.146535,
+        0.122321,
+        0.140598,
+        0.134636
+      ],
+      "layer_2_attention": 0.150889,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DoS-TCP",
+        "source_file": "TCP_IP-DoS-TCP"
+      },
+      "aligned_features": [
+        [
+          "Header_Length",
+          0.0
+        ],
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "Rate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 190,
+      "is_self": false,
+      "layer_1_mean_attention": 0.15197,
+      "layer_1_head_attentions": [
+        0.137957,
+        0.170236,
+        0.145868,
+        0.153818
+      ],
+      "layer_2_attention": 0.126996,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DDoS-TCP",
+        "source_file": "TCP_IP-DDoS-TCP"
+      },
+      "aligned_features": [
+        [
+          "Header_Length",
+          0.0
+        ],
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 194,
+      "is_self": false,
+      "layer_1_mean_attention": 0.15197,
+      "layer_1_head_attentions": [
+        0.137957,
+        0.170236,
+        0.145868,
+        0.153818
+      ],
+      "layer_2_attention": 0.125462,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DDoS-TCP",
+        "source_file": "TCP_IP-DDoS-TCP"
+      },
+      "aligned_features": [
+        [
+          "Header_Length",
+          0.0
+        ],
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 197,
+      "is_self": false,
+      "layer_1_mean_attention": 0.136023,
+      "layer_1_head_attentions": [
+        0.146534,
+        0.122324,
+        0.140599,
+        0.134637
+      ],
+      "layer_2_attention": 0.149163,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DoS-TCP",
+        "source_file": "TCP_IP-DoS-TCP"
+      },
+      "aligned_features": [
+        [
+          "Header_Length",
+          0.0
+        ],
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 160,
+      "is_self": true,
+      "layer_1_mean_attention": 0.136022,
+      "layer_1_head_attentions": [
+        0.14653,
+        0.122324,
+        0.140599,
+        0.134637
+      ],
+      "layer_2_attention": 0.149163,
+      "metadata": {
+        "category": "TCP/IP DoS/DDoS",
+        "subtype": "TCP_IP-DDoS-TCP",
+        "source_file": "TCP_IP-DDoS-TCP"
+      }
+    }
+  ],
+  "scientific_disclaimer": "SCIENTIFIC & FORENSIC DISCLAIMER:\nGraph attention coefficients quantify the structural aggregation weights assigned by GAT\nlayers during neighborhood message passing. While high attention indicates strong statistical\nreliance on a neighbor's representation for classification, it reflects model aggregation\nbehavior rather than empirical causal proof of attack transmission or physical device origin."
+}

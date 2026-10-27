@@ -1,0 +1,237 @@
+{
+  "features": [
+    "Header_Length",
+    "Protocol Type",
+    "Duration",
+    "Rate",
+    "Srate",
+    "Drate",
+    "fin_flag_number",
+    "syn_flag_number",
+    "rst_flag_number",
+    "psh_flag_number",
+    "ack_flag_number",
+    "ece_flag_number",
+    "cwr_flag_number",
+    "ack_count",
+    "syn_count",
+    "fin_count",
+    "rst_count",
+    "HTTP",
+    "HTTPS",
+    "DNS",
+    "Telnet",
+    "SMTP",
+    "SSH",
+    "IRC",
+    "TCP",
+    "UDP",
+    "DHCP",
+    "ARP",
+    "ICMP",
+    "IGMP",
+    "IPv",
+    "LLC",
+    "Tot sum",
+    "Min",
+    "Max",
+    "AVG",
+    "Std",
+    "Tot size",
+    "IAT",
+    "Number",
+    "Magnitue",
+    "Radius",
+    "Covariance",
+    "Variance",
+    "Weight"
+  ],
+  "num_features": 45,
+  "constant_features": [
+    "Drate",
+    "DHCP",
+    "IGMP"
+  ],
+  "feature_statistics": {
+    "Header_Length": {
+      "mean": 39585.30616744115,
+      "variance": 53486269178.98524
+    },
+    "Protocol Type": {
+      "mean": 7.4993250986320135,
+      "variance": 33.868586248126725
+    },
+    "Duration": {
+      "mean": 66.74641099907369,
+      "variance": 451.46064635510686
+    },
+    "Rate": {
+      "mean": 15787.681658489058,
+      "variance": 1491963101.4947095
+    },
+    "Srate": {
+      "mean": 15787.681658489058,
+      "variance": 1491963101.4947095
+    },
+    "Drate": {
+      "mean": 0.0,
+      "variance": 0.0
+    },
+    "fin_flag_number": {
+      "mean": 0.005454664938297926,
+      "variance": 0.001270938088588326
+    },
+    "syn_flag_number": {
+      "mean": 0.1736094507425658,
+      "variance": 0.1184425518184578
+    },
+    "rst_flag_number": {
+      "mean": 0.05602703280491281,
+      "variance": 0.02838856851394933
+    },
+    "psh_flag_number": {
+      "mean": 0.046287816726766975,
+      "variance": 0.018874164438210342
+    },
+    "ack_flag_number": {
+      "mean": 0.17093253639398837,
+      "variance": 0.10815875854295873
+    },
+    "ece_flag_number": {
+      "mean": 3.921568685886906e-06,
+      "variance": 3.921414957313251e-07
+    },
+    "cwr_flag_number": {
+      "mean": 4.313725539866615e-06,
+      "variance": 3.960598346563933e-07
+    },
+    "ack_count": {
+      "mean": 0.03264500035951828,
+      "variance": 0.027137512198776824
+    },
+    "syn_count": {
+      "mean": 0.3098527797006217,
+      "variance": 0.3779867984296737
+    },
+    "fin_count": {
+      "mean": 0.23494876995091066,
+      "variance": 1.4928514158729105
+    },
+    "rst_count": {
+      "mean": 30.404978706984974,
+      "variance": 47872.6685131384
+    },
+    "HTTP": {
+      "mean": 6.43137259518399e-05,
+      "variance": 9.980177754259865e-06
+    },
+    "HTTPS": {
+      "mean": 0.018188627482556244,
+      "variance": 0.014241875802438226
+    },
+    "DNS": {
+      "mean": 0.00038431373092473724,
+      "variance": 7.695818776429095e-05
+    },
+    "Telnet": {
+      "mean": 3.7254902296790906e-05,
+      "variance": 3.1946905944952717e-06
+    },
+    "SMTP": {
+      "mean": 4.1176470982677805e-05,
+      "variance": 3.5865398949101076e-06
+    },
+    "SSH": {
+      "mean": 4.5098039668564705e-05,
+      "variance": 3.978358437923033e-06
+    },
+    "IRC": {
+      "mean": 3.7254902296790906e-05,
+      "variance": 3.1946905944952717e-06
+    },
+    "TCP": {
+      "mean": 0.4980768629851588,
+      "variance": 0.24448977623346638
+    },
+    "UDP": {
+      "mean": 0.2514988236117597,
+      "variance": 0.18343462417309303
+    },
+    "DHCP": {
+      "mean": 0.0,
+      "variance": 0.0
+    },
+    "ARP": {
+      "mean": 0.015040392121774888,
+      "variance": 0.013088190428671289
+    },
+    "ICMP": {
+      "mean": 0.2353839217444845,
+      "variance": 0.17891243718088734
+    },
+    "IGMP": {
+      "mean": 0.0,
+      "variance": 0.0
+    },
+    "IPv": {
+      "mean": 0.9849596078541933,
+      "variance": 0.013088190493988308
+    },
+    "LLC": {
+      "mean": 0.9849596078541933,
+      "variance": 0.013088190493988308
+    },
+    "Tot sum": {
+      "mean": 907.9880446585861,
+      "variance": 3150413.8138106274
+    },
+    "Min": {
+      "mean": 65.22389378701004,
+      "variance": 12313.65058782609
+    },
+    "Max": {
+      "mean": 126.28761244859876,
+      "variance": 66180.2684448709
+    },
+    "AVG": {
+      "mean": 86.44281156831629,
+      "variance": 24828.830190389875
+    },
+    "Std": {
+      "mean": 22.32476265809758,
+      "variance": 6684.416454626645
+    },
+    "Tot size": {
+      "mean": 86.5281557895436,
+      "variance": 25146.23906905565
+    },
+    "IAT": {
+      "mean": 84764965.11674678,
+      "variance": 985346019029682.4
+    },
+    "Number": {
+      "mean": 9.49994253607357,
+      "variance": 2.1961067822934486
+    },
+    "Magnitue": {
+      "mean": 11.583205472011192,
+      "variance": 32.75033413512592
+    },
+    "Radius": {
+      "mean": 31.545769109438076,
+      "variance": 13361.072888670247
+    },
+    "Covariance": {
+      "mean": 9724.00349344562,
+      "variance": 1897881833.5476317
+    },
+    "Variance": {
+      "mean": 0.1810571879816844,
+      "variance": 0.11209046374156964
+    },
+    "Weight": {
+      "mean": 141.54839844707413,
+      "variance": 1457.5735505719874
+    }
+  }
+}

@@ -1,0 +1,405 @@
+{
+  "target_node": {
+    "node_index": 40,
+    "true_class_id": 0,
+    "true_category": "Benign",
+    "source_file": "Benign",
+    "subtype": "Benign"
+  },
+  "prediction": {
+    "predicted_class_id": 0,
+    "predicted_category": "Benign",
+    "confidence": 0.909992,
+    "class_probabilities": {
+      "Benign": 0.9099918603897095,
+      "ARP Spoofing": 0.026116427034139633,
+      "MQTT attacks": 0.0424695685505867,
+      "Reconnaissance": 0.021245205774903297,
+      "TCP/IP DoS/DDoS": 0.00017689657397568226
+    }
+  },
+  "self_attention": {
+    "layer_1_mean_self_attention": 0.154941,
+    "layer_2_self_attention": 0.1698,
+    "layer_1_head_attentions": [
+      0.096699,
+      0.176408,
+      0.214735,
+      0.131923
+    ]
+  },
+  "total_incoming_neighbors": 5,
+  "top_k_requested": 5,
+  "top_contributing_neighbors": [
+    {
+      "neighbor_index": 76,
+      "is_self": false,
+      "layer_1_mean_attention": 0.178709,
+      "layer_1_head_attentions": [
+        0.191551,
+        0.162836,
+        0.164777,
+        0.195672
+      ],
+      "layer_2_attention": 0.171881,
+      "metadata": {
+        "category": "Benign",
+        "subtype": "Benign",
+        "source_file": "Benign"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 66,
+      "is_self": false,
+      "layer_1_mean_attention": 0.173384,
+      "layer_1_head_attentions": [
+        0.172553,
+        0.16302,
+        0.158048,
+        0.199914
+      ],
+      "layer_2_attention": 0.168586,
+      "metadata": {
+        "category": "Benign",
+        "subtype": "Benign",
+        "source_file": "Benign"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 70,
+      "is_self": false,
+      "layer_1_mean_attention": 0.1605,
+      "layer_1_head_attentions": [
+        0.128501,
+        0.167792,
+        0.176791,
+        0.168915
+      ],
+      "layer_2_attention": 0.167914,
+      "metadata": {
+        "category": "Benign",
+        "subtype": "Benign",
+        "source_file": "Benign"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 79,
+      "is_self": false,
+      "layer_1_mean_attention": 0.163067,
+      "layer_1_head_attentions": [
+        0.207791,
+        0.165519,
+        0.137148,
+        0.141811
+      ],
+      "layer_2_attention": 0.161454,
+      "metadata": {
+        "category": "Benign",
+        "subtype": "Benign",
+        "source_file": "Benign"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 43,
+      "is_self": false,
+      "layer_1_mean_attention": 0.1694,
+      "layer_1_head_attentions": [
+        0.202906,
+        0.164425,
+        0.148501,
+        0.161766
+      ],
+      "layer_2_attention": 0.160365,
+      "metadata": {
+        "category": "Benign",
+        "subtype": "Benign",
+        "source_file": "Benign"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    }
+  ],
+  "all_neighbors_detail": [
+    {
+      "neighbor_index": 43,
+      "is_self": false,
+      "layer_1_mean_attention": 0.1694,
+      "layer_1_head_attentions": [
+        0.202906,
+        0.164425,
+        0.148501,
+        0.161766
+      ],
+      "layer_2_attention": 0.160365,
+      "metadata": {
+        "category": "Benign",
+        "subtype": "Benign",
+        "source_file": "Benign"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 66,
+      "is_self": false,
+      "layer_1_mean_attention": 0.173384,
+      "layer_1_head_attentions": [
+        0.172553,
+        0.16302,
+        0.158048,
+        0.199914
+      ],
+      "layer_2_attention": 0.168586,
+      "metadata": {
+        "category": "Benign",
+        "subtype": "Benign",
+        "source_file": "Benign"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 70,
+      "is_self": false,
+      "layer_1_mean_attention": 0.1605,
+      "layer_1_head_attentions": [
+        0.128501,
+        0.167792,
+        0.176791,
+        0.168915
+      ],
+      "layer_2_attention": 0.167914,
+      "metadata": {
+        "category": "Benign",
+        "subtype": "Benign",
+        "source_file": "Benign"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 76,
+      "is_self": false,
+      "layer_1_mean_attention": 0.178709,
+      "layer_1_head_attentions": [
+        0.191551,
+        0.162836,
+        0.164777,
+        0.195672
+      ],
+      "layer_2_attention": 0.171881,
+      "metadata": {
+        "category": "Benign",
+        "subtype": "Benign",
+        "source_file": "Benign"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 79,
+      "is_self": false,
+      "layer_1_mean_attention": 0.163067,
+      "layer_1_head_attentions": [
+        0.207791,
+        0.165519,
+        0.137148,
+        0.141811
+      ],
+      "layer_2_attention": 0.161454,
+      "metadata": {
+        "category": "Benign",
+        "subtype": "Benign",
+        "source_file": "Benign"
+      },
+      "aligned_features": [
+        [
+          "Protocol Type",
+          0.0
+        ],
+        [
+          "Duration",
+          0.0
+        ],
+        [
+          "fin_flag_number",
+          0.0
+        ],
+        [
+          "Drate",
+          0.0
+        ]
+      ]
+    },
+    {
+      "neighbor_index": 40,
+      "is_self": true,
+      "layer_1_mean_attention": 0.154941,
+      "layer_1_head_attentions": [
+        0.096699,
+        0.176408,
+        0.214735,
+        0.131923
+      ],
+      "layer_2_attention": 0.1698,
+      "metadata": {
+        "category": "Benign",
+        "subtype": "Benign",
+        "source_file": "Benign"
+      }
+    }
+  ],
+  "scientific_disclaimer": "SCIENTIFIC & FORENSIC DISCLAIMER:\nGraph attention coefficients quantify the structural aggregation weights assigned by GAT\nlayers during neighborhood message passing. While high attention indicates strong statistical\nreliance on a neighbor's representation for classification, it reflects model aggregation\nbehavior rather than empirical causal proof of attack transmission or physical device origin."
+}
