@@ -33,6 +33,12 @@ from src.dashboard.dashboard_utils import (
     load_graph_split,
     load_training_history,
 )
+from src.dashboard.alert_utils import HIGH_FROM, REVIEW_BELOW, count_alerts, severity_of
+from src.dashboard.synthetic_demo import (
+    SYNTHETIC_DEMO_ROWS,
+    SYNTHETIC_DEMO_WARNING,
+    generate_synthetic_demo_csv,
+)
 from src.explain.attention_explainer import AttentionExplainer
 from src.explain.explanation_report import format_explanation_report
 
@@ -51,9 +57,6 @@ PREPROC_DIR = "models/preprocessing"
 MAX_ROWS = 2000
 MAX_MB = 25
 K = 5
-REVIEW_BELOW = 0.50   # model unsure -> flag for human review (possible unknown attack)
-HIGH_FROM = 0.80      # attack with at least this confidence -> High severity
-
 CHART_CFG = {"displayModeBar": False, "displaylogo": False}
 
 CLASSES = ["Benign", "ARP Spoofing", "MQTT attacks", "Reconnaissance", "TCP/IP DoS/DDoS"]
@@ -89,7 +92,7 @@ CLASS_INFO = {
 SEVERITY = {  # label: (icon, colour, meaning)
     "High": ("🔴", "#dc2626", "Attack, model is confident (≥ 80%)."),
     "Medium": ("🟠", "#d97706", "Attack, model is fairly sure (50–80%)."),
-    "Review": ("🟡", "#ca8a04", "Model is unsure (< 50%). Could be an unfamiliar or new attack. Check manually."),
+    "Review": ("🟡", "#ca8a04", "Model is unsure (< 50%). Inspect the flow manually; this is not a detection of a new attack."),
     "Normal": ("🟢", "#16a34a", "Normal traffic."),
 }
 SEVERITY_ORDER = {"High": 0, "Medium": 1, "Review": 2, "Normal": 3}
@@ -224,14 +227,6 @@ def read_file_bytes(path: str) -> bytes:
 # ==========================================================================
 # Pipeline: CSV -> clean -> scale -> k-NN graph -> GAT -> results
 # ==========================================================================
-def severity_of(category: str, confidence: float) -> str:
-    if confidence < REVIEW_BELOW:
-        return "Review"
-    if category == "Benign":
-        return "Normal"
-    return "High" if confidence >= HIGH_FROM else "Medium"
-
-
 def run_model(x: np.ndarray, name: str, truth=None) -> dict:
     """Builds the similarity graph, classifies every flow and returns one result bundle."""
     explainer = load_explainer()
@@ -515,13 +510,20 @@ def page_analyze():
             st.markdown("#### 1 · Choose your data")
             source = st.radio(
                 "Data source",
-                ["Upload my CSV", "Sample file (50 flows)", "Built-in test set (200 labelled flows)"],
+                [
+                    "Upload my CSV",
+                    "Sample file (50 flows)",
+                    "Built-in test set (200 labelled flows)",
+                    "Synthetic demo",
+                ],
                 label_visibility="collapsed",
             )
             uploaded = None
             if source == "Upload my CSV":
                 uploaded = st.file_uploader("Network flow CSV", type=["csv"],
                                             help=f"Up to {MAX_ROWS:,} rows and {MAX_MB} MB.")
+            elif source == "Synthetic demo":
+                st.info(SYNTHETIC_DEMO_WARNING, icon=":material/info:")
 
             st.markdown("#### 2 · Run the detector")
             go_btn = st.button("Analyze traffic", type="primary", icon=":material/play_arrow:",
@@ -554,6 +556,13 @@ def page_analyze():
                 run, notes = analyze_csv(uploaded.getvalue(), uploaded.name)
             elif source.startswith("Sample file"):
                 run, notes = analyze_csv(read_file_bytes("sample_input.csv"), "sample_input.csv")
+            elif source == "Synthetic demo":
+                demo_csv = generate_synthetic_demo_csv(load_scaler())
+                run, notes = analyze_csv(
+                    demo_csv,
+                    f"Synthetic demo ({SYNTHETIC_DEMO_ROWS} flows)",
+                )
+                notes.append(SYNTHETIC_DEMO_WARNING)
             else:
                 run, notes = analyze_test_graph()
         except ValueError as e:
@@ -581,20 +590,24 @@ def page_alerts():
         return
 
     for note in st.session_state.get("notes", []):
-        st.info(note, icon=":material/info:")
+        if note == SYNTHETIC_DEMO_WARNING:
+            st.warning(note, icon=":material/warning:")
+        else:
+            st.info(note, icon=":material/info:")
 
     t = run["table"]
     n = run["n"]
     sev_counts = t["_sev"].value_counts()
-    n_high, n_med, n_rev = (int(sev_counts.get(s, 0)) for s in ("High", "Medium", "Review"))
-    n_attack = int((t["Prediction"] != "Benign").sum())
+    n_high, n_med = (int(sev_counts.get(s, 0)) for s in ("High", "Medium"))
+    n_attack, n_rev = count_alerts(t)
+    n_attention = n_attack + n_rev
 
     # ---- headline ----
     if n_high:
         banner("bad", "🚨 ATTACKS DETECTED", f"{n_attack} of {n} flows look malicious",
                f"{n_high} high-severity alert{'s' if n_high != 1 else ''} need attention. Start with the top of the list below.")
     elif n_attack or n_rev:
-        banner("warn", "⚠️ CHECK THESE", f"{n_attack + n_rev} of {n} flows need a look",
+        banner("warn", "⚠️ CHECK THESE", f"{n_attention} of {n} flows need a look",
                "Nothing is high severity, but some flows look suspicious or the model is unsure about them.")
     else:
         banner("ok", "✅ ALL CLEAR", f"All {n} flows look normal", "The model found no attack traffic in this data.")
@@ -766,7 +779,7 @@ def page_investigate():
     # ---- ACTION ----
     with tab_do:
         if sev == "Review":
-            st.warning("The model isn't sure about this flow. Treat it as a **possible unknown or new attack** and check it manually.")
+            st.warning("The model is uncertain about this flow's classification. Inspect the traffic and verify the recommended action before responding.")
         with st.container(border=True):
             st.markdown(f"**Suggested next step for {cat}**")
             st.write(CLASS_INFO[cat]["action"])

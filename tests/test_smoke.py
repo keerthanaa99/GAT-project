@@ -32,9 +32,14 @@ def test_mini_gat_smoke():
     """Verify that a small flow feature batch can be converted to graph and forward-passed."""
     # 1. Sample 5 rows from an existing dataset CSV
     sample_csv = os.path.join("WIFI & MQTT", "attacks", "CSV", "train", "Benign_train.pcap.csv")
+    if not os.path.exists(sample_csv):
+        sample_csv = "sample_input.csv"
     assert os.path.exists(sample_csv), f"Sample CSV not found at {sample_csv}"
     
     df_sample = pd.read_csv(sample_csv, nrows=5)
+    assert len(df_sample) >= 5, f"Sample CSV must contain at least 5 rows, got {len(df_sample)}"
+    assert df_sample.shape[1] == 45, f"Sample CSV must contain exactly 45 feature columns, got {df_sample.shape[1]}"
+    df_sample = df_sample.iloc[:5]
     assert df_sample.shape == (5, 45)
 
     # 2. Scale features
